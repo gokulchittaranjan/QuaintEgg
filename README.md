@@ -17,9 +17,11 @@ To create a new app with this code,
 
 * Create an app directory
 
-`cd QuaintEgg`
-`mkdir -p app/controllers`
-`mkdir -p app/tables`
+```
+cd QuaintEgg
+mkdir -p app/controllers
+mkdir -p app/tables
+```
 
 * Define a table: Look at framework/tables/Definition.py as an example
 * Create an API call 
@@ -28,10 +30,11 @@ To create a new app with this code,
 	* If you are just doing a bunch of CRUD operations on a table, the class corresponding to the API call is as simple as:
 
 
-`class User(ClassicDBController):
+```class User(ClassicDBController):
 
 	def __init__(self):
-		ClassicDBController.__init__(WEBCONFIG, AuthTable);`
+		ClassicDBController.__init__(WEBCONFIG, AuthTable);
+```
 
 	* By default, all calls require prior authentication (using the /framework/auth/login call). 
 	* A user created using PUT /framerwork/auth/user can be used for logging in
