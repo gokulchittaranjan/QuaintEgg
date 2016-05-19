@@ -30,7 +30,8 @@ mkdir -p app/tables
 	* If you are just doing a bunch of CRUD operations on a table, the class corresponding to the API call is as simple as:
 
 
-```class User(ClassicDBController):
+```
+class User(ClassicDBController):
 
 	def __init__(self):
 		ClassicDBController.__init__(WEBCONFIG, AuthTable);
