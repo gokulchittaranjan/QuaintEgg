@@ -18,22 +18,54 @@ urls = (
 		'/logout', 'Logout',
 		'/salt', 'Salt',
 		'/user', 'User',
+		'/signup', 'Signup',
 );
 
 logger = Logging.getLogger("Authentication");
 
-
 # Setup default user for the database;
 def setupDefaultDatabase(CONFIG):
 	recordManager = RecordManager(WEBCONFIG, AuthTable);
-	recordManager.addRecord({"username":"root", "md5key": hashlib.md5("root:root:auth").hexdigest(), "name": "Root", "meta":{},"role":["superadmin"]});
-	logger.info("Default database created.");
+	if len(recordManager.getRecords({"username":"root"}))==0:
+		recordManager.addRecord({"username":"root", "md5key": hashlib.md5("root:root:auth").hexdigest(), "name": "Root", "meta":{},"role":["superadmin"]});
+		logger.info("Default database created.");
 
+
+class Signup:
+
+	def PUT(self):
+
+		jsonHook();
+
+		logger = Logging.getLogger("ControllerUtil")
+		logger.debug("Object Put");
+
+		res = prepareResultObject();
+		
+		x = web.input(payload="");
+
+		logger.debug("Put with %s" %(x.payload));
+		try:
+			payload = json.loads(x.payload);
+			payload["role"] = ["user"];
+			x.payload = json.dumps(payload);
+		except:
+			updateStatus(res, "failed");
+			return json.dumps(res);
+
+		recordManager = RecordManager(WEBCONFIG, AuthTable, web.ctx.ip);
+		result = recordManager.addRecord(x.payload);
+		
+		if result:
+			updateStatus(res, "done");
+		else:
+			updateStatus(res, "failed");
+		return json.dumps(res);
 
 class User(ClassicDBController):
 
 	def __init__(self):
-		ClassicDBController.__init__(WEBCONFIG, AuthTable);
+		ClassicDBController.__init__(self, WEBCONFIG, AuthTable);
 
 class Salt:
 	def GET(self):
@@ -50,7 +82,7 @@ class Salt:
 
 class Logout:
 	def GET(self):
-		
+
 		jsonHook();
 		x = web.input(sessionkey="");
 		res = prepareResultObject();
@@ -67,7 +99,6 @@ class Login:
 
 		jsonHook();
 		logger.debug("Login.");
-
 		x = web.input(payload="");
 		
 		res = prepareResultObject();
@@ -79,7 +110,6 @@ class Login:
 		objects = recordManager.getObjectForIndex(x.payload, allowProtected=True);
 		currObject = recordManager.convertToRecord(x.payload);
 		authkey = currObject["md5key"];
-
 		for obj in objects:
 			key = obj["md5key"];
 			thiskey = hashlib.md5("%s:%s" %(salt, key)).hexdigest();

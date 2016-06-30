@@ -102,10 +102,10 @@ class RecordManager:
 		for ii in xrange(0, len(records)):
 			for f in self.tableObject["protectedFields"]:
 				if f in records[ii]:
-					del records[ii][f];
+					records[ii][f] = "hidden.";
 
 	def getObjects(self, record, allowProtected=False):
-		if type(record)==str:
+		if type(record)==str or type(record)==unicode:
 			try:
 				record =json.loads(record);
 			except ValueError:
@@ -114,9 +114,10 @@ class RecordManager:
 		records = map(lambda x: RecordsAndObjects.convertRecordToObject(x, self.tableObject["userFields"]), records);
 		if not allowProtected:
 			self.__removeProtected(records);
+		return records;
 
 	def getRecords(self, record = {}, allowProtected=False):
-		if type(record)==str:
+		if type(record)==str or type(record)==unicode:
 			try:
 				record =json.loads(record);
 			except ValueError:
@@ -146,7 +147,7 @@ class RecordManager:
 		if record==None:
 			return False;
 		fetchFilter = {self.tableObject["index"]: record[self.tableObject["index"]]};
-		self.connection.removeRecord(self.tableObject["name"], fetchFilter);
+		self.connection.deleteRecord(self.tableObject["name"], fetchFilter);
 		return True;
 
 	def addRecord(self, record):

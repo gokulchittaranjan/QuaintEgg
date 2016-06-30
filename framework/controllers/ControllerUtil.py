@@ -34,7 +34,11 @@ def openDBConnection(CONFIG):
 def validateRole(roles=set([])):
 	if type(roles)==list:
 		roles = set(roles);
-	if len(web.ctx.session.roles.intersection(roles))>0 or "superadmin" in roles:
+	x = web.input(sessionkey="");
+	if not x.sessionkey in web.ctx.session.roles:
+		print "sessionkey not found."
+		return False;
+	if len(web.ctx.session.roles[x.sessionkey].intersection(roles))>0 or "superadmin" in roles or "superadmin" in web.ctx.session.roles[x.sessionkey]:
 		return True;
 	else:
 		return False;
@@ -44,10 +48,11 @@ def authentication_processor(handle):
 	logger = Logging.getLogger("AuthenticationProcessor");
 	path = web.ctx.path;
 	x = web.input(sessionkey="");
-	if (not x.sessionkey in web.ctx.session.authkeys or x.sessionkey=="") and not path in ["/login", "/salt"]:
+	if (not x.sessionkey in web.ctx.session.authkeys or x.sessionkey=="") and not path in ["/login", "/salt", "/signup"]:
 		reply = dict();
 		GenericUtil.addAuthenticationFailedInfo(reply);
 		logger.warning("Unauthenticated API access; IP: %s" %(web.ctx.ip));
+		jsonHook();
 		return json.dumps(reply);
 	else:
 		logger.debug("Authentication succeded; IP: %s" %(web.ctx.ip));
@@ -101,7 +106,7 @@ class ClassicDBController:
 		logger.debug("Delete with %s" %(x.payload));
 
 		recordManager = RecordManager(self.CONFIG, self.tableObject, web.ctx.ip);
-		result = recordManager.deleteRecord(x.payload);
+		result = recordManager.removeRecord(x.payload);
 
 		if result:
 			updateStatus(res, "done");
@@ -154,7 +159,6 @@ class ClassicDBController:
 
 		recordManager = RecordManager(self.CONFIG, self.tableObject, web.ctx.ip);
 		objects = recordManager.getObjects(x.payload);
-		
 		if objects!=None:
 			updateStatus(res, "done");
 			res["response"] = objects;
