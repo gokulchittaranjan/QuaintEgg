@@ -18,5 +18,6 @@ AuthTable = {
 	},
 	"index": "username",
 	"protectedFields": ["md5key"],
+	"readonlyFields": [],
 	"autogenerateIndex": False,
 }

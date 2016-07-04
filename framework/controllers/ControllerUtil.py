@@ -32,6 +32,10 @@ def openDBConnection(CONFIG):
 	return DBDriver.getDBConnection(CONFIG["dbName"], CONFIG["dbDriver"]);
 
 def validateRole(roles=set([])):
+	path = web.ctx.homepath;
+	
+	if "/unauthenticated/" in path:
+		return True;
 	if type(roles)==list:
 		roles = set(roles);
 	x = web.input(sessionkey="");
@@ -48,7 +52,7 @@ def authentication_processor(handle):
 	logger = Logging.getLogger("AuthenticationProcessor");
 	path = web.ctx.path;
 	x = web.input(sessionkey="");
-	if (not x.sessionkey in web.ctx.session.authkeys or x.sessionkey=="") and not path in ["/login", "/salt", "/signup"]:
+	if (not x.sessionkey in web.ctx.session.authkeys or x.sessionkey=="") and not path in ["/login", "/salt", "/signup"] and not "/unauthenticated/" in path and not path in web.ctx.session.nonauthcalls:
 		reply = dict();
 		GenericUtil.addAuthenticationFailedInfo(reply);
 		logger.warning("Unauthenticated API access; IP: %s" %(web.ctx.ip));
@@ -161,7 +165,17 @@ class ClassicDBController:
 		objects = recordManager.getObjects(x.payload);
 		if objects!=None:
 			updateStatus(res, "done");
-			res["response"] = objects;
+			res["response"] = dict();
+			keys = [];
+			for k,v in self.tableObject["userFields"].items():
+				if v==str:
+					keys.append([k, 'string']);
+				else:
+					keys.append([k, 'object']);
+			res["response"]["keys"] = keys
+			res["response"]["name"] = self.tableObject["name"];
+			res["response"]["readonlyFields"] = self.tableObject["readonlyFields"];
+			res["response"]["records"] = objects;
 		else:
 			updateStatus(res, "failed");
 

@@ -1,6 +1,7 @@
 import uuid;
 import json;
 import datetime;
+from collections import defaultdict;
 
 class GenericUtil:
 
@@ -16,3 +17,7 @@ class GenericUtil:
 	def addAuthenticationFailedInfo(dct):
 		dct["status"] = False;
 		dct["message"] = "Authentication failed.";
+
+	@staticmethod
+	def getDefaultSessionDict():
+		return {'authkeys': dict(), 'salt': '', 'roles': defaultdict(list), 'nonauthcalls': []};

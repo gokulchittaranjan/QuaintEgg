@@ -5,15 +5,18 @@ import os;
 import optparse;
 import sys;
 import shutil;
-from collections import defaultdict;
+#from collections import defaultdict;
 from config import *;
 from urls import *;
+
+from QuaintEgg.lib.Util import GenericUtil;
 
 web.config.debug = False
 
 app = web.application(urls, globals())
 
-sessionDict = {'authkeys': dict(), 'salt': '', 'roles': defaultdict(list)};
+#sessionDict = {'authkeys': dict(), 'salt': '', 'roles': defaultdict(list), 'nonauthcalls': []};
+sessionDict = GenericUtil.getDefaultSessionDict();
 for k,v in WEBCONFIG["defaultSessionVariables"].items():
 	sessionDict[k] = v;
 

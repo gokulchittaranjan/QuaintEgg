@@ -1,5 +1,5 @@
 import json;
-
+import uuid;
 from SqliteDBConnection import DBConnection;
 from QuaintEgg.lib.Util import GenericUtil;
 
@@ -54,6 +54,8 @@ class RecordsAndObjects:
 				newObj[m] = obj[m];
 			else:
 				newObj[m] = json.dumps(obj[m]);
+		if not index in newObj:
+			newObj[index] = str(uuid.uuid4());
 		return newObj;
 
 	@staticmethod
@@ -129,7 +131,7 @@ class RecordManager:
 
 	def getRecordForIndex(self, record, allowProtected=False):
 		record = self.__preprocessRecord(record);
-		if record == None:
+		if record == None or not self.tableObject["index"] in record:
 			return [];
 		fetchFilter = {self.tableObject["index"]: record[self.tableObject["index"]]};
 		records = self.connection.getRecords(self.tableObject["name"], fetchFilter);
