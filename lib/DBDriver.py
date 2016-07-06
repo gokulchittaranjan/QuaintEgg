@@ -32,8 +32,12 @@ class RecordsAndObjects:
 				obj[m] = tp();
 				logger.warning("created field %s in object %s" %(m, json.dumps(obj)))
 			if not ( (type(obj[m])==unicode and tp==str) or (type(obj[m])==str and tp==unicode) or (type(obj[m])==tp) ):
-				logger.error("field %s in invalid type in object %s" %(m, json.dumps(obj)));
-				return None;
+				if obj[m]==None:
+					obj[m] = tp();
+				else:
+					logger.error("field %s in invalid type in object %s" %(m, json.dumps(obj)));
+					logger.error("type is %s" %(type(obj[m])))
+					return None;
 		
 		if not index in obj or (type(obj[index])!=str and type(obj[index])!=unicode) or obj[index]=="":
 			if not autogenerateIndex:

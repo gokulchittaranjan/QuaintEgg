@@ -127,7 +127,6 @@ class Login:
 			res["response"]["sessionkey"] = sessionKey;
 			res["response"]["role"] = roles;
 		return json.dumps(res);
-
 app = web.application(urls, locals())
 
 app.add_processor(authentication_processor);

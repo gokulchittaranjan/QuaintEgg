@@ -20,4 +20,4 @@ class GenericUtil:
 
 	@staticmethod
 	def getDefaultSessionDict():
-		return {'authkeys': dict(), 'salt': '', 'roles': defaultdict(list), 'nonauthcalls': []};
+		return {'authkeys': dict(), 'salt': '', 'roles': defaultdict(list), 'nonauthcalls': [], 'sessionInfo' :{} };
