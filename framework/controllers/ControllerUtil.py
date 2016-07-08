@@ -5,7 +5,7 @@ from QuaintEgg.lib.Util import GenericUtil;
 from QuaintEgg.lib import DBDriver;
 from QuaintEgg.lib.DBDriver import RecordManager;
 
-from Utils import Logging;
+from PythonUtils.Utils import Logging;
 
 # Json hook
 def jsonHook():

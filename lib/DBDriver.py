@@ -1,9 +1,9 @@
 import json;
 import uuid;
-from SqliteDBConnection import DBConnection;
+from PythonUtils.SqliteDBConnection import DBConnection;
 from QuaintEgg.lib.Util import GenericUtil;
 
-from Utils import Logging;
+from PythonUtils.Utils import Logging;
 
 class DBDriver:
 

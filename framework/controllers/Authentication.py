@@ -11,7 +11,7 @@ from QuaintEgg.lib.Util import GenericUtil;
 from QuaintEgg.lib.DBDriver import RecordManager;
 from QuaintEgg.framework.tables.Definition import AuthTable;
 
-from Utils import Logging;
+from PythonUtils.Utils import Logging;
 
 urls = (
 		'/login', 'Login',
