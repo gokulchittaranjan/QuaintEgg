@@ -2,7 +2,6 @@
 
 import web;
 import os;
-import optparse;
 import sys;
 import shutil;
 #from collections import defaultdict;
@@ -10,12 +9,12 @@ from config import *;
 from urls import *;
 
 from QuaintEgg.lib.Util import GenericUtil;
+from QuaintEgg.lib.WebPyCustomizations  import QuaintEggApplication;
 
 web.config.debug = False
 
-app = web.application(urls, globals())
+app = QuaintEggApplication(urls, globals());
 
-#sessionDict = {'authkeys': dict(), 'salt': '', 'roles': defaultdict(list), 'nonauthcalls': []};
 sessionDict = GenericUtil.getDefaultSessionDict();
 for k,v in WEBCONFIG["defaultSessionVariables"].items():
 	sessionDict[k] = v;
@@ -30,17 +29,12 @@ import __builtin__;
 __builtin__.curdir = curdir;
 __builtin__.WEBCONFIG = WEBCONFIG;
 
-def session_hook():
-	web.ctx.session = session;
-	web.template.Template.globals['session'] = session;
 
 application = None;
 
 if __name__ == "__main__":
-	p = optparse.OptionParser();
-	p.add_option('--reset-tmp', '-r', action="store_true", help="reset the tmp directory.");
-	p.add_option('--reset-db', '-d', action="store_true", help="reset the db.");
-	options, arguments = p.parse_args();
+	p = QuaintEggApplication.getParser()
+	options = p.parse_args();
 	if options.reset_tmp:
 		print "Resetting tmp directory...";
 		if os.path.exists(WEBCONFIG["tmpDir"]):
@@ -52,9 +46,9 @@ if __name__ == "__main__":
 		Authentication.setupDefaultDatabase(WEBCONFIG);
 	if not os.path.exists(WEBCONFIG["tmpDir"]):
 		os.mkdir(WEBCONFIG["tmpDir"]);
-	sys.argv = arguments;
-	app.add_processor(web.loadhook(session_hook))
-	app.run();
+	sessionHook = QuaintEggApplication.SessionHook(session);
+	app.add_processor(web.loadhook(sessionHook.session_hook))
+	app.run(port=options.port, host=options.host);
 else:
 	if not os.path.exists(WEBCONFIG["tmpDir"]):
 		os.mkdir(WEBCONFIG["tmpDir"]);
