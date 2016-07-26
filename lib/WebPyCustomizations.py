@@ -11,6 +11,7 @@ class QuaintEggApplication(web.application):
 		p = argparse.ArgumentParser();
 		p.add_argument('-p', '--port', type=int, default=8080, help="Port to run on.");
 		p.add_argument('-m', '--host', default="0.0.0.0", help="Host to run on.");
+		p.add_argument('-c', '--config', default="config.json", help="Configuration json file.");
 		p.add_argument('--reset-tmp', '-r', action="store_true", help="Reset the tmp directory.");
 		p.add_argument('--reset-db', '-d', action="store_true", help="Reset the db.");
 		return p;
