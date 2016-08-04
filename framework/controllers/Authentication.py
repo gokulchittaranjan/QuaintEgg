@@ -70,6 +70,7 @@ class User(ClassicDBController):
 class Salt:
 	def GET(self):
 		jsonHook();
+		#print web.ctx.env
 		logger.debug("Salt requested.");
 
 		res = prepareResultObject();
