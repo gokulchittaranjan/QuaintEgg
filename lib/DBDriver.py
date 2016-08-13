@@ -118,7 +118,7 @@ class RecordManager:
 				record =json.loads(record);
 			except ValueError:
 				return [];
-		records = self.connection.getRecords(self.tableObject["name"], record, noResults=ipp, pagination=pagination, direction=direction);
+		records = self.connection.getRecords(self.tableObject["name"], record, noResults=ipp, pagination=pagination, direction=direction, sortKey=self.tableObject["index"], sortDirection="ascending");
 		records = map(lambda x: RecordsAndObjects.convertRecordToObject(x, self.tableObject["userFields"]), records);
 		if not allowProtected:
 			self.__removeProtected(records);
@@ -130,7 +130,7 @@ class RecordManager:
 				record =json.loads(record);
 			except ValueError:
 				return [];
-		records = self.connection.getRecords(self.tableObject["name"], record, noResults=ipp, pagination=pagination, direction=direction);
+		records = self.connection.getRecords(self.tableObject["name"], record, noResults=ipp, pagination=pagination, direction=direction, sortKey=self.tableObject["index"], sortDirection="ascending");
 		if not allowProtected:
 			self.__removeProtected(records);
 		return records;
