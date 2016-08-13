@@ -3,6 +3,7 @@ import uuid;
 from PythonUtils.SqliteDBConnection import DBConnection;
 from QuaintEgg.lib.Util import GenericUtil;
 
+import copy;
 from PythonUtils.Utils import Logging;
 
 class DBDriver:
@@ -17,6 +18,7 @@ class RecordsAndObjects:
 	@staticmethod
 	def validateObject(obj, mandatoryFields, index, autogenerateIndex=False):
 		logger = Logging.getLogger("RecordsAndObjects.validateObject");
+		obj = copy.deepcopy(obj);
 
 		if type(obj)==str or type(obj)==unicode:
 			logger.debug("Validing object %s" %(obj))
@@ -110,25 +112,25 @@ class RecordManager:
 				if f in records[ii]:
 					records[ii][f] = "hidden.";
 
-	def getObjects(self, record, allowProtected=False):
+	def getObjects(self, record, allowProtected=False, ipp=10, pagination={}, direction="forward"):
 		if type(record)==str or type(record)==unicode:
 			try:
 				record =json.loads(record);
 			except ValueError:
 				return [];
-		records = self.connection.getRecords(self.tableObject["name"], record);
+		records = self.connection.getRecords(self.tableObject["name"], record, noResults=ipp, pagination=pagination, direction=direction, sortKey=self.tableObject["index"], sortDirection="ascending");
 		records = map(lambda x: RecordsAndObjects.convertRecordToObject(x, self.tableObject["userFields"]), records);
 		if not allowProtected:
 			self.__removeProtected(records);
 		return records;
 
-	def getRecords(self, record = {}, allowProtected=False):
+	def getRecords(self, record = {}, allowProtected=False, ipp=10, pagination={}, direction="forward"):
 		if type(record)==str or type(record)==unicode:
 			try:
 				record =json.loads(record);
 			except ValueError:
 				return [];
-		records = self.connection.getRecords(self.tableObject["name"], record);
+		records = self.connection.getRecords(self.tableObject["name"], record, noResults=ipp, pagination=pagination, direction=direction, sortKey=self.tableObject["index"], sortDirection="ascending");
 		if not allowProtected:
 			self.__removeProtected(records);
 		return records;

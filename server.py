@@ -11,6 +11,7 @@ from urls import *;
 
 from QuaintEgg.lib.Util import GenericUtil;
 from QuaintEgg.lib.WebPyCustomizations  import QuaintEggApplication;
+from QuaintEgg.framework.controllers import Authentication;
 
 application = None;
 

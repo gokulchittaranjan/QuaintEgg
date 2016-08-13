@@ -99,8 +99,12 @@ class ClassicDBController:
 
 		logger = Logging.getLogger("ControllerUtil")
 		logger.debug("Object Delete");
-
 		res = prepareResultObject();
+		if "deleteAllowed" in self.tableObject and not self.tableObject["deleteAllowed"]:
+			logger.debug("Delete not allowed.");
+			updateStatus(res, "permissionFail");
+			return json.dumps(res);
+		
 		if not validateRole():
 			updateStatus(res, "permissionFail");
 			return json.dumps(res);
@@ -157,12 +161,28 @@ class ClassicDBController:
 			return json.dumps(res);
 
 		
-		x = web.input(payload="");
+		x = web.input(payload="", ipp="", startIndex="", direction="forward");
+
+		ipp = 10;
+		try:
+			ipp = int(x.ipp);
+		except:
+			print "Ipp invalid: %s. defaulting." %(x.ipp);
+		
+		pagination = {};
+		if not(x.startIndex == None or x.startIndex ==""):
+			pagination[self.tableObject["index"]] = x.startIndex;
+
+		if x.direction!="forward" and x.direction!="backward":
+			print "Invalid direction";
+			direction = "forward";
+		else:
+			direction = x.direction;
 
 		logger.debug("Get with %s" %(x.payload));
 
 		recordManager = RecordManager(self.CONFIG, self.tableObject, web.ctx.ip);
-		objects = recordManager.getObjects(x.payload);
+		objects = recordManager.getObjects(x.payload, ipp=ipp, pagination=pagination, direction=direction);
 		if objects!=None:
 			updateStatus(res, "done");
 			res["response"] = dict();
@@ -175,7 +195,12 @@ class ClassicDBController:
 			res["response"]["keys"] = keys
 			res["response"]["name"] = self.tableObject["name"];
 			res["response"]["readonlyFields"] = self.tableObject["readonlyFields"];
+			if "titles" in self.tableObject:
+				res["response"]["titles"] = self.tableObject["titles"];
+			if "columnorder" in self.tableObject:
+				res["response"]["columnorder"] = self.tableObject["columnorder"];
 			res["response"]["records"] = objects;
+			res["response"]["index"] = self.tableObject["index"];
 		else:
 			updateStatus(res, "failed");
 
