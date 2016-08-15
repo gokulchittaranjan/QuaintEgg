@@ -201,6 +201,8 @@ class ClassicDBController:
 				res["response"]["columnorder"] = self.tableObject["columnorder"];
 			res["response"]["records"] = objects;
 			res["response"]["index"] = self.tableObject["index"];
+			if "smallscreenColumns" in self.tableObject:
+				res["response"]["smallscreenColumns"] = self.tableObject["smallscreenColumns"];
 		else:
 			updateStatus(res, "failed");
 
